@@ -109,3 +109,21 @@ variable "valkey_password" {
   default     = "" #generate password using openssl rand -base64 32
   description = "The password for the Valkey"
 }
+
+variable "cassandradb_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable Cassandra"
+}
+
+variable "cassandradb_namespace" {
+  type        = string
+  default     = null
+  description = "The name of the cassandradb namespace to create"
+}
+
+variable "cassandradb_password" {
+  type        = string
+  default     = "" #generate password using openssl rand -base64 32
+  description = "The password for the Cassandra"
+}
