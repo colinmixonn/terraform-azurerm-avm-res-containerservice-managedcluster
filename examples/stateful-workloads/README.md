@@ -44,7 +44,7 @@ resource "azurerm_resource_group" "this" {
 data "azurerm_client_config" "current" {}
 
 
-# Section to Create the Azure Key Vault 
+# Section to Create the Azure Key Vault
 ######################################################################################################################
 
 module "avm_res_keyvault_vault" {
@@ -199,6 +199,19 @@ module "mongodb" {
   service_account_name = var.service_account_name
   oidc_issuer_url      = module.default.oidc_issuer_url
 }
+
+##Section to deploy Cassandra cluster only when var.cassandradb_enabled is set to true
+######################################################################################################################
+module "cassandradb" {
+  count                 = var.cassandradb_enabled ? 1 : 0
+  source                = "./cassandra"
+  key_vault_id          = module.avm_res_keyvault_vault.resource_id
+  resource_group_name   = azurerm_resource_group.this.name
+  object_id             = module.default.key_vault_secrets_provider_object_id
+  tenant_id             = data.azurerm_client_config.current.tenant_id
+  cassandradb_namespace = var.cassandradb_namespace
+  cassandra_password    = var.cassandra_password
+}
 ```
 
 <!-- markdownlint-disable MD033 -->
@@ -249,6 +262,30 @@ Default: `"version: v1.1.0\nsteps:\n  - cmd: bash echo Waiting 10 seconds the pr
 ### <a name="input_aks_mongodb_backup_storage_account_name"></a> [aks\_mongodb\_backup\_storage\_account\_name](#input\_aks\_mongodb\_backup\_storage\_account\_name)
 
 Description: The name of the backup storage account
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_cassandra_password"></a> [cassandra\_password](#input\_cassandra\_password)
+
+Description: The password for the Cassandra
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_cassandradb_enabled"></a> [cassandradb\_enabled](#input\_cassandradb\_enabled)
+
+Description: Enable Cassandra
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_cassandradb_namespace"></a> [cassandradb\_namespace](#input\_cassandradb\_namespace)
+
+Description: The name of the cassandradb namespace to create
 
 Type: `string`
 
@@ -454,6 +491,12 @@ Version: 0.4.0
 Source: Azure/avm-res-keyvault-vault/azurerm
 
 Version: 0.9.1
+
+### <a name="module_cassandradb"></a> [cassandradb](#module\_cassandradb)
+
+Source: ./cassandra
+
+Version:
 
 ### <a name="module_default"></a> [default](#module\_default)
 

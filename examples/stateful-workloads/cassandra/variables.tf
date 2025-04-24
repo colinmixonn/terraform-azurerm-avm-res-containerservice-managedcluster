@@ -14,8 +14,8 @@ variable "key_vault_id" {
 }
 
 variable "cassandra_password" {
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
   #generate password using openssl rand -base64 32
   description = "The password for the Cassandra"
 }
